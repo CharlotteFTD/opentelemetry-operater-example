@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-go-demo-client
+  labels:
+    app: otel-go-demo-client
+spec:
+  selector:
+    matchLabels:
+      app: otel-go-demo-client
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: otel-go-demo-client
+      annotations:
+        # sidecar.opentelemetry.io/inject: "true" # CORRECT
+        instrumentation.opentelemetry.io/inject-go: "true"
+        instrumentation.opentelemetry.io/otel-go-auto-target-exe: "/app/main"
+    spec:
+      containers:
+      - name: myapp
+        image: liuyuge/otel-go-demo-client:latest
+        env:
+        - name: DEMO_SERVER_ENDPOINT
+          value: http://otel-go-demo-client:7080/hello
